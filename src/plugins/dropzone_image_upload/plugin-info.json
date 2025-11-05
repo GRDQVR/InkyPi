@@ -1,0 +1,5 @@
+{
+    "display_name": "Dropzone Image Upload",
+    "id": "dropzone_image_upload",
+    "class": "DropzoneImageUpload"
+}
