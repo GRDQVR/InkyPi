@@ -13,6 +13,10 @@ CURRENTLY_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing"
 class Spotify(BasePlugin):
 
     def get_token(self, settings):
+        """
+        Returns a valid access token.
+        Uses refresh_token if available, otherwise uses first-time credentials.
+        """
         client_id = settings.get("clientId")
         client_secret = settings.get("clientSecret")
         auth_code = settings.get("authCode")
@@ -27,9 +31,11 @@ class Spotify(BasePlugin):
             return token_data["access_token"]
 
         # Refresh token if possible
-        if token_data and "refresh_token" in token_data and client_id and client_secret:
+        if token_data and token_data.get("refresh_token") and client_id and client_secret:
             refresh_token = token_data["refresh_token"]
-            headers = {"Authorization": "Basic " + base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()}
+            headers = {
+                "Authorization": "Basic " + base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
+            }
             data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
             resp = requests.post(TOKEN_URL, data=data, headers=headers)
             if resp.status_code == 200:
@@ -40,20 +46,28 @@ class Spotify(BasePlugin):
                     json.dump(token_data, f)
                 return token_data["access_token"]
             else:
-                logger.warning(f"Refresh token failed: {resp.text}, trying new code.")
+                logger.warning(f"Refresh token failed: {resp.text}, trying first-time auth.")
 
-        # If no token or refresh failed, try first-time auth
+        # First-time authorization (store refresh_token if returned)
         if not (client_id and client_secret and auth_code):
             raise RuntimeError("Spotify credentials missing and no valid token found.")
 
-        headers = {"Authorization": "Basic " + base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()}
-        data = {"grant_type": "authorization_code", "code": auth_code, "redirect_uri": REDIRECT_URI}
+        headers = {
+            "Authorization": "Basic " + base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
+        }
+        data = {
+            "grant_type": "authorization_code",
+            "code": auth_code,
+            "redirect_uri": REDIRECT_URI
+        }
         resp = requests.post(TOKEN_URL, data=data, headers=headers)
         if resp.status_code != 200:
             raise RuntimeError(f"Spotify token request failed: {resp.text}")
 
         token_data = resp.json()
         token_data["expires_at"] = time.time() + token_data.get("expires_in", 3600)
+
+        # Ensure refresh token is saved
         if "refresh_token" in token_data:
             token_data["refresh_token"] = token_data["refresh_token"]
 
@@ -89,7 +103,11 @@ class Spotify(BasePlugin):
             if settings.get("backgroundOption") == "blur":
                 return pad_image_blur(image, dimensions)
             else:
-                background_color = ImageColor.getcolor(settings.get("backgroundColor") or (255,255,255),"RGB")
-                return ImageOps.pad(image, dimensions, color=background_color, method=Image.Resampling.LANCZOS)
+                background_color = ImageColor.getcolor(
+                    settings.get("backgroundColor") or (255, 255, 255), "RGB"
+                )
+                return ImageOps.pad(
+                    image, dimensions, color=background_color, method=Image.Resampling.LANCZOS
+                )
         return image
 
