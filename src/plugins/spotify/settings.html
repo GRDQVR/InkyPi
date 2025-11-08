@@ -1,0 +1,60 @@
+<details id="advancedSetup">
+  <summary style="font-weight:bold; cursor:pointer; margin-bottom:10px;">Spotify Advanced Setup (optional)</summary>
+  <div class="form-group">
+      <label for="clientId" class="form-label">Spotify Client ID:</label>
+      <input type="text" id="clientId" name="clientId" class="form-input" placeholder="Enter your Spotify Client ID" />
+  </div>
+
+  <div class="form-group">
+      <label for="clientSecret" class="form-label">Spotify Client Secret:</label>
+      <input type="text" id="clientSecret" name="clientSecret" class="form-input" placeholder="Enter your Spotify Client Secret" />
+  </div>
+
+  <div class="form-group">
+      <label for="authCode" class="form-label">Authorization Code:</label>
+      <input type="text" id="authCode" name="authCode" class="form-input" placeholder="Enter authorization code" />
+  </div>
+
+  <div class="form-group">
+      <button id="authorizeBtn" type="button" class="form-input">Open Spotify Login</button>
+      <p id="authorizeStatus"></p>
+  </div>
+</details>
+
+<div class="form-group">
+    <label for="padImage" class="form-label">Scale to Fit:</label>
+    <div class="toggle-container">
+        <input type="checkbox" id="padImage" name="padImage" class="toggle-checkbox" value="false">
+        <label for="padImage" class="toggle-label"></label>
+    </div>
+    <input type="hidden" name="padImage" value="true">
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="backgroundOption">Background:</label>
+    <div class="form-group">
+        <input type="radio" id="backgroundBlur" name="backgroundOption" value="blur" checked>
+        <label for="backgroundBlur">Blur</label>
+        <input type="radio" id="backgroundColorRadio" name="backgroundOption" value="color">
+        <label for="backgroundColorRadio">Color</label>
+        <input type="color" id="backgroundColor" name="backgroundColor" value="#ffffff" class="color-picker"/>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("authorizeBtn")?.addEventListener("click", () => {
+        const clientId = document.getElementById("clientId").value;
+        if (!clientId) {
+            alert("Please enter your Client ID first.");
+            return;
+        }
+        const redirectUri = encodeURIComponent("http://127.0.0.1:8080/callback");
+        const scope = encodeURIComponent("user-read-currently-playing user-read-playback-state");
+        const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
+        window.open(url, "_blank");
+        document.getElementById("authorizeStatus").innerText = "Spotify login opened. Copy the code from the redirect URL and paste it above.";
+    });
+});
+</script>
+
