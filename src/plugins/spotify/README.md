@@ -2,6 +2,8 @@
 
 Requires a Free Spotify Client ID, Secret and Auth code
 
+On first run you need to do the following:
+
 Go to: https://developer.spotify.com/dashboard
 - Click "Create app":
 - Supply name and description (i.e. InkyPi)
@@ -21,5 +23,7 @@ Open the Spotify plugin in Inkypi.
 Go back to the InkyPi tab and enter the Authorization Code the zzzz in the field for that.
 
 Press "Update now"
+
+This generates a file named:  spotify_token.json   and on subsequent calls of "Update Now" you do not need to provide anything in the Client ID, Secret or Auth field - they can be left blank when the file spotify_token.json is generated on first run. 
 
 
