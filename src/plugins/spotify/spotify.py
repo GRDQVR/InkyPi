@@ -13,14 +13,7 @@ CURRENTLY_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing"
 class Spotify(BasePlugin):
 
     def get_token(self, settings):
-        """
-        Returns a valid access token.
-        Uses refresh_token if available, otherwise uses first-time credentials.
-        """
-        client_id = settings.get("clientId")
-        client_secret = settings.get("clientSecret")
-        auth_code = settings.get("authCode")
-
+        # Load existing token file if present
         token_data = None
         if os.path.exists(TOKEN_FILE):
             with open(TOKEN_FILE, "r") as f:
@@ -30,25 +23,34 @@ class Spotify(BasePlugin):
         if token_data and time.time() < token_data.get("expires_at", 0):
             return token_data["access_token"]
 
-        # Refresh token if possible
-        if token_data and token_data.get("refresh_token") and client_id and client_secret:
-            refresh_token = token_data["refresh_token"]
+        # Use client ID/secret from settings or token file
+        client_id = settings.get("clientId") or (token_data.get("client_id") if token_data else None)
+        client_secret = settings.get("clientSecret") or (token_data.get("client_secret") if token_data else None)
+        auth_code = settings.get("authCode")
+
+        # Refresh token if available
+        if token_data and token_data.get("refresh_token"):
+            if not (client_id and client_secret):
+                raise RuntimeError("Client ID/Secret missing; cannot refresh Spotify token")
             headers = {
                 "Authorization": "Basic " + base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
             }
-            data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
+            data = {"grant_type": "refresh_token", "refresh_token": token_data["refresh_token"]}
             resp = requests.post(TOKEN_URL, data=data, headers=headers)
             if resp.status_code == 200:
                 new_data = resp.json()
                 token_data["access_token"] = new_data["access_token"]
                 token_data["expires_at"] = time.time() + new_data.get("expires_in", 3600)
+                # Store client credentials for future refreshes
+                token_data["client_id"] = client_id
+                token_data["client_secret"] = client_secret
                 with open(TOKEN_FILE, "w") as f:
                     json.dump(token_data, f)
                 return token_data["access_token"]
             else:
                 logger.warning(f"Refresh token failed: {resp.text}, trying first-time auth.")
 
-        # First-time authorization (store refresh_token if returned)
+        # First-time authorization
         if not (client_id and client_secret and auth_code):
             raise RuntimeError("Spotify credentials missing and no valid token found.")
 
@@ -66,8 +68,9 @@ class Spotify(BasePlugin):
 
         token_data = resp.json()
         token_data["expires_at"] = time.time() + token_data.get("expires_in", 3600)
-
-        # Ensure refresh token is saved
+        token_data["client_id"] = client_id
+        token_data["client_secret"] = client_secret
+        # Keep refresh_token if returned
         if "refresh_token" in token_data:
             token_data["refresh_token"] = token_data["refresh_token"]
 
