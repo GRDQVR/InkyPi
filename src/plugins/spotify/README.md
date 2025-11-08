@@ -24,6 +24,6 @@ Go back to the InkyPi tab and enter the Authorization Code the zzzz in the field
 
 Press "Update now"
 
-This generates a file named:  spotify_token.json   and on subsequent calls of "Update Now" you do not need to provide anything in the Client ID, Secret or Auth field - they can be left blank when the file spotify_token.json is generated on first run. 
+This generates a file named:  spotify_token.json   and on subsequent calls of "Update Now" you do not need to provide anything in the Client ID, Secret or Auth field - they can be left blank when the file spotify_token.json is generated on first run.  In case you want to start over delete this file and restart the service.
 
 
