@@ -1,0 +1,63 @@
+.youtube-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+.youtube-title {
+    font-size: 6em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.channel-name {
+    font-size: 3em;
+    margin-bottom: 0.8em;
+}
+
+.subscribers-label {
+    font-size: 2em;
+    text-transform: uppercase;
+    margin-bottom: 0.4em;
+}
+
+.subscriber-count {
+    font-size: 4em;
+    font-weight: bold;
+}
+.youtube-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+.youtube-title {
+    font-size: 6em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.channel-name {
+    font-size: 3em;
+    margin-bottom: 0.8em;
+}
+
+.subscribers-label {
+    font-size: 2em;
+    text-transform: uppercase;
+    margin-bottom: 0.4em;
+}
+
+.subscriber-count {
+    font-size: 4em;
+    font-weight: bold;
+}
+
