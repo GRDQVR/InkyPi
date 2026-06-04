@@ -8,8 +8,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-IMAGE_MODELS = ["dall-e-3", "dall-e-2", "gpt-image-1"]
-DEFAULT_IMAGE_MODEL = "dall-e-3"
+IMAGE_MODELS = ["gpt-image-1", "gpt-image-1-mini", "gpt-image-2"]
+DEFAULT_IMAGE_MODEL = "gpt-image-1"
 DEFAULT_IMAGE_QUALITY = "standard"
 
 class AIImage(BasePlugin):
@@ -37,7 +37,7 @@ class AIImage(BasePlugin):
             logger.error(f"Invalid image model: {image_model}")
             raise RuntimeError("Invalid Image Model provided.")
 
-        image_quality = settings.get('quality', "medium" if image_model == "gpt-image-1" else "standard")
+        image_quality = settings.get('quality', "medium")
         randomize_prompt = settings.get('randomizePrompt') == 'true'
         orientation = device_config.get_config("orientation")
 
@@ -73,9 +73,9 @@ class AIImage(BasePlugin):
         logger.info("=== AI Image Plugin: Image generation complete ===")
         return image
 
-    def fetch_image(self, ai_client, prompt, model="dall-e-3", quality="standard", orientation="horizontal"):
+    def fetch_image(self, ai_client, prompt, model="gpt-image-1", quality="medium", orientation="horizontal"):
         """
-        Fetch image from OpenAI API. Now an instance method to access image_loader.
+        Fetch image from OpenAI API.
         """
         logger.info(f"Generating image for prompt: {prompt}, model: {model}, quality: {quality}")
         prompt += (
@@ -87,30 +87,18 @@ class AIImage(BasePlugin):
             "and visual appeal. Avoid excessive detail or complex gradients, ensuring "
             "the design works well with flat, vibrant colors."
         )
+        size = "1536x1024" if orientation == "horizontal" else "1024x1536"
         args = {
             "model": model,
             "prompt": prompt,
-            "size": "1024x1024",
+            "size": size,
+            "quality": quality,
         }
-        if model == "dall-e-3":
-            args["size"] = "1792x1024" if orientation == "horizontal" else "1024x1792"
-            args["quality"] = quality
-        elif model == "gpt-image-1":
-            args["size"] = "1536x1024" if orientation == "horizontal" else "1024x1536"
-            args["quality"] = quality
 
         response = ai_client.images.generate(**args)
-        if model in ["dall-e-3", "dall-e-2"]:
-            image_url = response.data[0].url
-            # Use adaptive loader for memory-efficient processing
-            # AI images are pre-sized, but still benefit from optimized loading
-            session = get_http_session()
-            response = session.get(image_url)
-            img = Image.open(BytesIO(response.content))
-        elif model == "gpt-image-1":
-            image_base64 = response.data[0].b64_json
-            image_bytes = base64.b64decode(image_base64)
-            img = Image.open(BytesIO(image_bytes))
+        image_base64 = response.data[0].b64_json
+        image_bytes = base64.b64decode(image_base64)
+        img = Image.open(BytesIO(image_bytes))
         return img
 
     @staticmethod
