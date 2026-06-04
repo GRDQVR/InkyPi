@@ -1,0 +1,82 @@
+<div class="form-group">
+  <label for="client_id" class="form-label">Google Client ID:</label>
+  <input type="text" id="client_id" name="client_id" class="form-input"
+    placeholder="Enter your Google OAuth Client ID" />
+</div>
+
+<div class="form-group">
+  <label for="client_secret" class="form-label">Google Client Secret:</label>
+  <input type="password" id="client_secret" name="client_secret" class="form-input"
+    placeholder="Enter your Google OAuth Client Secret" />
+</div>
+
+<div class="form-group">
+  <label for="auth_code" class="form-label">Authorization Code:</label>
+  <input type="text" id="auth_code" name="auth_code" class="form-input"
+    placeholder="Paste the code from OAuth Playground here" />
+
+  <details style="margin-top: 10px;">
+    <summary style="cursor:pointer; font-weight:bold; color:#555;">Vis opsætningsvejledning</summary>
+    <div style="font-size: 0.85em; color: #555; margin-top: 10px; line-height: 1.7em;">
+      <strong>A. Opret Google Cloud projekt og OAuth credentials</strong><br>
+      1. Gå til <a href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a><br>
+      2. Opret et nyt projekt (eller vælg eksisterende)<br>
+      3. Gå til <strong>APIs &amp; Services → Library</strong> og søg efter <strong>"Google Drive API"</strong> → aktivér den<br>
+      4. Gå til <strong>APIs &amp; Services → Credentials</strong><br>
+      5. Klik <strong>Create Credentials → OAuth client ID</strong><br>
+      6. Vælg <strong>Web application</strong><br>
+      7. Under <em>Authorized redirect URIs</em> tilføj: <code>https://developers.google.com/oauthplayground</code><br>
+      8. Klik <strong>Create</strong> — kopiér <strong>Client ID</strong> og <strong>Client Secret</strong> ind i felterne ovenfor<br>
+      <br>
+      <strong>B. Tilføj testbruger</strong><br>
+      9. Gå til <strong>APIs &amp; Services → OAuth consent screen</strong><br>
+      10. Klik på <strong>Audience</strong> i venstremenuen<br>
+      11. Under <em>Test users</em> tilføj din Google-konto (f.eks. din Gmail-adresse)<br>
+      <br>
+      <strong>C. Hent Authorization Code</strong><br>
+      12. Gem Client ID og Secret i felterne ovenfor først<br>
+      13. Åbn <a href="https://developers.google.com/oauthplayground/" target="_blank">Google OAuth Playground</a><br>
+      14. Klik på <strong>tandhjulet</strong> øverst til højre → sæt flueben i <em>"Use your own OAuth credentials"</em> → indtast Client ID og Secret<br>
+      15. Skriv dette scope i feltet: <code>https://www.googleapis.com/auth/drive.readonly</code><br>
+      16. Klik <strong>"Authorize APIs"</strong> → log ind med din Google-konto → klik <strong>"Continue"</strong> forbi advarslen<br>
+      17. Klik <strong>"Exchange authorization code for tokens"</strong> → kopiér <em>Authorization code</em><br>
+      18. Sæt koden ind i feltet ovenfor og klik <strong>Save inden 60 sekunder</strong> — koden udløber hurtigt!<br>
+      <br>
+      <em>Efter første godkendelse gemmes et refresh token automatisk, og du behøver ikke gentage processen.</em>
+    </div>
+  </details>
+</div>
+
+<div class="form-group">
+  <label for="folder_id" class="form-label">Google Drive Mappe ID (valgfrit):</label>
+  <input type="text" id="folder_id" name="folder_id" class="form-input"
+    placeholder="F.eks. 1aBcDeFgHiJkLmNoPqRsTuVwXyZ" />
+  <p style="font-size: 0.85em; color: #666; margin-top: 4px;">
+    Lad stå tomt for billeder fra hele dit Drive. Find mappe-ID i URL'en på Google Drive:
+    <code>drive.google.com/drive/folders/<strong>[MAPPE-ID]</strong></code>
+  </p>
+</div>
+
+<hr />
+
+<div class="form-group">
+  <label for="randomOrder" class="form-label">Tilfældig rækkefølge:</label>
+  <div class="toggle-container">
+    <input type="checkbox" id="randomOrder" name="randomOrder" class="toggle-checkbox"
+      value="false" onclick="this.value = this.checked ? 'true' : 'false'" />
+    <label for="randomOrder" class="toggle-label"></label>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (loadPluginSettings) {
+      document.getElementById("client_id").value = pluginSettings.client_id || "";
+      document.getElementById("client_secret").value = pluginSettings.client_secret || "";
+      document.getElementById("folder_id").value = pluginSettings.folder_id || "";
+      const randomOrder = document.getElementById("randomOrder");
+      randomOrder.checked = pluginSettings.randomOrder === "true";
+      randomOrder.value = randomOrder.checked ? "true" : "false";
+    }
+  });
+</script>
