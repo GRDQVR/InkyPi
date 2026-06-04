@@ -1,0 +1,85 @@
+<div class="form-group">
+    <label class="form-label">Upload Image</label>
+    <div id="dropZone" class="drop-zone">
+        <p>Drag & drop an image here, or click to browse</p>
+        <input type="file" id="imageUpload" name="imageFiles[]" accept="image/*" class="file-upload-input" />
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="padImage" class="form-label">Scale to Fit:</label>
+    <div class="toggle-container">
+        <input type="checkbox" id="padImage" name="padImage" class="toggle-checkbox" value="false">
+        <label for="padImage" class="toggle-label"></label>
+    </div>
+    <input type="hidden" name="padImage" value="true">
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="backgroundOption">Background:</label>
+    <div class="form-group">
+        <input type="radio" id="backgroundBlur" name="backgroundOption" value="blur" checked>
+        <label for="backgroundBlur">Blur</label>
+        <input type="radio" id="backgroundColorRadio" name="backgroundOption" value="color">
+        <label for="backgroundColorRadio">Color</label>
+        <input type="color" id="backgroundColor" name="backgroundColor" value="#ffffff" class="color-picker"/>
+    </div>
+</div>
+
+<div class="form-group">
+    <div id="fileNames" class="file-name-list"></div>
+</div>
+
+<style>
+    .drop-zone {
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .drop-zone.dragover {
+        background-color: #f0f0f0;
+        border-color: #888;
+    }
+</style>
+
+<script>
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("imageUpload");
+    const fileNamesDisplay = document.getElementById("fileNames");
+
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+    });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+    dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        fileInput.files = e.dataTransfer.files;
+        showFileName();
+    });
+    fileInput.addEventListener("change", showFileName);
+
+    function showFileName() {
+        fileNamesDisplay.innerHTML = "";
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            const fileElement = document.createElement("div");
+            fileElement.textContent = `Selected file: ${fileName}`;
+            fileNamesDisplay.appendChild(fileElement);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (loadPluginSettings) {
+            document.getElementById('padImage').checked = pluginSettings.padImage == 'false';
+            document.getElementById('backgroundColor').value = pluginSettings.backgroundColor;
+            const backgroundOption = pluginSettings.backgroundOption || 'blur';
+            document.querySelector(`input[name="backgroundOption"][value="${backgroundOption}"]`).checked = true;
+        }
+    });
+</script>
