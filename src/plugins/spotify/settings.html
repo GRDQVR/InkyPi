@@ -1,43 +1,75 @@
 <details id="advancedSetup">
-  <summary style="font-weight:bold; cursor:pointer; margin-bottom:10px;">Spotify Advanced Setup (optional)</summary>
-  <div class="form-group">
-      <label for="clientId" class="form-label">Spotify Client ID:</label>
-      <input type="text" id="clientId" name="clientId" class="form-input" placeholder="Enter your Spotify Client ID" />
-  </div>
-
-  <div class="form-group">
-      <label for="clientSecret" class="form-label">Spotify Client Secret:</label>
-      <input type="text" id="clientSecret" name="clientSecret" class="form-input" placeholder="Enter your Spotify Client Secret" />
-  </div>
-
-  <div class="form-group">
-      <label for="authCode" class="form-label">Authorization Code:</label>
-      <input type="text" id="authCode" name="authCode" class="form-input" placeholder="Enter authorization code" />
-  </div>
-
-  <div class="form-group">
-      <button id="authorizeBtn" type="button" class="form-input">Open Spotify Login</button>
-      <p id="authorizeStatus"></p>
+  <summary style="font-weight:bold; cursor:pointer; margin-bottom:10px;">Spotify Opsætningsvejledning</summary>
+  <div style="font-size:0.85em; color:#555; line-height:1.7em; margin-top:8px;">
+    <strong>A. Opret Spotify Developer App</strong><br>
+    1. Gå til <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a><br>
+    2. Klik <strong>"Create app"</strong> — giv den et navn (f.eks. InkyPi)<br>
+    3. Under <em>Redirect URIs</em> tilføj: <code>http://127.0.0.1:8080/callback</code><br>
+    4. Under <em>APIs used</em> vælg <strong>Web API</strong><br>
+    5. Gem og kopiér <strong>Client ID</strong> og <strong>Client Secret</strong> ind i felterne nedenfor<br>
+    <br>
+    <strong>B. Hent Authorization Code</strong><br>
+    6. Start musik på din Spotify-konto<br>
+    7. Åbn et <strong>inkognito-vindue</strong> (vigtigt — koder kan kun bruges én gang)<br>
+    8. Indtast Client ID i feltet nedenfor og klik <strong>"Åbn Spotify Login"</strong><br>
+    9. Log ind med din Spotify-konto og accepter adgang<br>
+    10. Du bliver sendt til en side der ikke eksisterer — kopiér koden fra URL'en:<br>
+    &nbsp;&nbsp;&nbsp;<code>http://127.0.0.1:8080/callback?code=<strong>[DIN KODE]</strong></code><br>
+    11. Sæt koden ind i feltet nedenfor og klik <strong>Update Now</strong><br>
+    <br>
+    <em>Efter første opsætning gemmes et refresh token automatisk i <code>spotify_token.json</code> — du behøver ikke indtaste noget igen.</em>
   </div>
 </details>
 
-<div class="form-group">
-    <label for="padImage" class="form-label">Scale to Fit:</label>
-    <div class="toggle-container">
-        <input type="checkbox" id="padImage" name="padImage" class="toggle-checkbox" value="false">
-        <label for="padImage" class="toggle-label"></label>
-    </div>
-    <input type="hidden" name="padImage" value="true">
+<div class="form-group" style="margin-top:16px;">
+    <label for="clientId" class="form-label">Spotify Client ID:</label>
+    <input type="text" id="clientId" name="clientId" class="form-input" placeholder="Fra Spotify Developer Dashboard" />
 </div>
 
 <div class="form-group">
-    <label class="form-label" for="backgroundOption">Background:</label>
-    <div class="form-group">
-        <input type="radio" id="backgroundBlur" name="backgroundOption" value="blur" checked>
-        <label for="backgroundBlur">Blur</label>
-        <input type="radio" id="backgroundColorRadio" name="backgroundOption" value="color">
-        <label for="backgroundColorRadio">Color</label>
-        <input type="color" id="backgroundColor" name="backgroundColor" value="#ffffff" class="color-picker"/>
+    <label for="clientSecret" class="form-label">Spotify Client Secret:</label>
+    <input type="password" id="clientSecret" name="clientSecret" class="form-input" placeholder="Fra Spotify Developer Dashboard" />
+</div>
+
+<div class="form-group">
+    <label for="authCode" class="form-label">Authorization Code:</label>
+    <input type="text" id="authCode" name="authCode" class="form-input" placeholder="Kode fra redirect URL" />
+    <button id="authorizeBtn" type="button" class="btn" style="margin-top:8px;">Åbn Spotify Login</button>
+    <p id="authorizeStatus" style="font-size:0.85em; color:#888; margin-top:4px;"></p>
+</div>
+
+<hr />
+
+<div class="form-group">
+    <label for="padImage" class="form-label">Tilpas til skærm:</label>
+    <div class="toggle-container">
+        <input type="checkbox" id="padImage" name="padImage" class="toggle-checkbox" value="false" onclick="this.value=this.checked?'true':'false'">
+        <label for="padImage" class="toggle-label"></label>
+    </div>
+</div>
+
+<div class="form-group" id="backgroundGroup">
+    <label class="form-label">Baggrund:</label>
+    <div style="display:flex; align-items:center; gap:16px;">
+        <label><input type="radio" id="backgroundBlur" name="backgroundOption" value="blur" checked> Blur</label>
+        <label><input type="radio" id="backgroundColorRadio" name="backgroundOption" value="color"> Farve</label>
+        <input type="color" id="backgroundColor" name="backgroundColor" value="#000000" class="color-picker"/>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="showText" class="form-label">Vis sangtitel og kunstner:</label>
+    <div class="toggle-container">
+        <input type="checkbox" id="showText" name="showText" class="toggle-checkbox" value="false" onclick="this.value=this.checked?'true':'false'">
+        <label for="showText" class="toggle-label"></label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="showRecentIfIdle" class="form-label">Vis senest afspillede hvis intet kører:</label>
+    <div class="toggle-container">
+        <input type="checkbox" id="showRecentIfIdle" name="showRecentIfIdle" class="toggle-checkbox" value="false" onclick="this.value=this.checked?'true':'false'">
+        <label for="showRecentIfIdle" class="toggle-label"></label>
     </div>
 </div>
 
@@ -46,15 +78,38 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("authorizeBtn")?.addEventListener("click", () => {
         const clientId = document.getElementById("clientId").value;
         if (!clientId) {
-            alert("Please enter your Client ID first.");
+            alert("Indtast venligst Client ID først.");
             return;
         }
         const redirectUri = encodeURIComponent("http://127.0.0.1:8080/callback");
-        const scope = encodeURIComponent("user-read-currently-playing user-read-playback-state");
+        const scope = encodeURIComponent("user-read-currently-playing user-read-playback-state user-read-recently-played");
         const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
         window.open(url, "_blank");
-        document.getElementById("authorizeStatus").innerText = "Spotify login opened. Copy the code from the redirect URL and paste it above.";
+        document.getElementById("authorizeStatus").innerText = "Spotify login åbnet. Kopiér koden fra redirect URL og sæt den ind ovenfor.";
     });
+
+    if (loadPluginSettings) {
+        if (pluginSettings.clientId) document.getElementById("clientId").value = pluginSettings.clientId;
+        if (pluginSettings.clientSecret) document.getElementById("clientSecret").value = pluginSettings.clientSecret;
+
+        const padImage = document.getElementById("padImage");
+        padImage.checked = pluginSettings.padImage === "true";
+        padImage.value = padImage.checked ? "true" : "false";
+
+        if (pluginSettings.backgroundOption) {
+            document.querySelector(`input[name=backgroundOption][value="${pluginSettings.backgroundOption}"]`).checked = true;
+        }
+        if (pluginSettings.backgroundColor) {
+            document.getElementById("backgroundColor").value = pluginSettings.backgroundColor;
+        }
+
+        const showText = document.getElementById("showText");
+        showText.checked = pluginSettings.showText === "true";
+        showText.value = showText.checked ? "true" : "false";
+
+        const showRecent = document.getElementById("showRecentIfIdle");
+        showRecent.checked = pluginSettings.showRecentIfIdle === "true";
+        showRecent.value = showRecent.checked ? "true" : "false";
+    }
 });
 </script>
-
